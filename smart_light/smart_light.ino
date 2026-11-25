@@ -1,16 +1,18 @@
-#include "config.h"
-#include "lampada.h"
-#include "controle_fisico.h"
-#include "interpretadora_estados.h"
-#include "conexao_wifi.h"
-#include "servico_mqtt.h"
-#include "console_serial.h"
+#include "src/config/config.h"
+#include "src/lampada/lampada.h"
+#include "src/controles/controle_fisico.h"
+#include "src/lampada/interpretadora_estados.h"
+#include "src/rede/conexao_wifi.h"
+#include "src/pareamento/servidor_ble.h"
+#include "src/rede/servico_mqtt.h"
+#include "src/controles/console_serial.h"
 
 Lampada lampada;
 ControleFisico controles(lampada);
 InterpretadoraDeEstado interpretadora(lampada);
 
 ConexaoWifi conexaoWifi;
+ServidorBle servidorBle;
 
 ServicoMqtt servicoMqtt(interpretadora);
 ConsoleSerial console(interpretadora, conexaoWifi);
@@ -55,7 +57,7 @@ void loop() {
   servicoMqtt.manter();
 
   if (controles.ouvir() == PedidoUsuario::Pareamento) {
-    Serial.println("Modo pareamento (em breve)");
+    servidorBle.iniciar();
   }
 
   console.ouvir();
